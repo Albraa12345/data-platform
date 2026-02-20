@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <!-- Logging Configuration -->
+    <logger>
+        <level>information</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <size>100M</size>
+        <count>3</count>
+    </logger>
+
+    <!-- Network Configuration -->
+    <listen_host>0.0.0.0</listen_host>
+    
+    <!-- Kafka Integration Settings -->
+    <kafka>
+        <auto_offset_reset>earliest</auto_offset_reset>
+    </kafka>
+    
+    <!-- MergeTree Settings -->
+    <merge_tree>
+        <max_suspicious_broken_parts>5</max_suspicious_broken_parts>
+    </merge_tree>
+    
+    <!-- Timezone -->
+    <timezone>UTC</timezone>
+</clickhouse>

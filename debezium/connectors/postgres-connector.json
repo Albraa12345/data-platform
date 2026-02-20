@@ -1,0 +1,61 @@
+{
+    "name": "postgres-users-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "tasks.max": "1",
+
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "commerce",
+        "database.server.name": "postgres",
+
+        "topic.prefix": "postgres",
+        "table.include.list": "public.users",
+
+        "plugin.name": "pgoutput",
+        "publication.name": "debezium_publication",
+        "publication.autocreate.mode": "filtered",
+        "slot.name": "debezium_users_slot",
+        "slot.drop.on.stop": "false",
+
+        "snapshot.mode": "initial",
+        "snapshot.locking.mode": "none",
+
+        "tombstones.on.delete": "true",
+        "delete.handling.mode": "rewrite",
+
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable": "false",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable": "false",
+
+        "transforms": "unwrap,extractKey",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "transforms.unwrap.drop.tombstones": "false",
+        "transforms.unwrap.delete.handling.mode": "rewrite",
+        "transforms.unwrap.add.fields": "op,ts_ms,source.ts_ms",
+        "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+        "transforms.extractKey.field": "user_id",
+
+        "decimal.handling.mode": "double",
+        "time.precision.mode": "adaptive_time_microseconds",
+
+        "heartbeat.interval.ms": "10000",
+        "heartbeat.action.query": "INSERT INTO public.debezium_heartbeat (id, ts) VALUES (1, NOW()) ON CONFLICT (id) DO UPDATE SET ts = NOW()",
+
+        "errors.tolerance": "all",
+        "errors.log.enable": "true",
+        "errors.log.include.messages": "true",
+        "errors.deadletterqueue.topic.name": "dlq.postgres.users",
+        "errors.deadletterqueue.topic.replication.factor": "1",
+
+        "provide.transaction.metadata": "true",
+        "transaction.topic": "postgres.transaction",
+
+        "poll.interval.ms": "500",
+        "max.batch.size": "2048",
+        "max.queue.size": "8192"
+    }
+}

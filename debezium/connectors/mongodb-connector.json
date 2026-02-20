@@ -1,0 +1,54 @@
+{
+    "name": "mongodb-events-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+        "tasks.max": "1",
+
+        "mongodb.connection.string": "mongodb://admin:admin@mongodb:27017/?replicaSet=rs0&authSource=admin",
+
+        "topic.prefix": "mongo",
+        "collection.include.list": "commerce.events",
+
+        "capture.mode": "change_streams_update_full",
+        "snapshot.mode": "initial",
+
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable": "false",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable": "false",
+
+        "transforms": "unwrap,extractKey",
+        "transforms.unwrap.type": "io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+        "transforms.unwrap.drop.tombstones": "false",
+        "transforms.unwrap.delete.handling.mode": "rewrite",
+        "transforms.unwrap.add.fields": "op,ts_ms",
+        "transforms.unwrap.flatten.struct": "true",
+        "transforms.unwrap.flatten.struct.delimiter": "_",
+        "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+        "transforms.extractKey.field": "id",
+
+        "mongodb.poll.interval.ms": "1000",
+        "mongodb.connect.timeout.ms": "30000",
+        "mongodb.socket.timeout.ms": "30000",
+        "mongodb.server.selection.timeout.ms": "30000",
+
+        "cursor.max.await.time.ms": "1000",
+
+        "heartbeat.interval.ms": "10000",
+
+        "errors.tolerance": "all",
+        "errors.log.enable": "true",
+        "errors.log.include.messages": "true",
+        "errors.deadletterqueue.topic.name": "dlq.mongo.events",
+        "errors.deadletterqueue.topic.replication.factor": "1",
+
+        "signal.data.collection": "commerce.debezium_signals",
+        "signal.enabled.channels": "source",
+
+        "provide.transaction.metadata": "false",
+
+        "poll.interval.ms": "500",
+        "max.batch.size": "2048",
+        "max.queue.size": "8192"
+    }
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <profiles>
+        <default>
+            <max_memory_usage>10000000000</max_memory_usage>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+            <load_balancing>random</load_balancing>
+            <max_partitions_per_insert_block>100</max_partitions_per_insert_block>
+            <max_execution_time>300</max_execution_time>
+            <max_rows_to_read>1000000000</max_rows_to_read>
+            <max_bytes_to_read>100000000000</max_bytes_to_read>
+            <max_result_rows>10000000</max_result_rows>
+            <max_result_bytes>1000000000</max_result_bytes>
+        </default>
+        
+        <readonly>
+            <readonly>1</readonly>
+        </readonly>
+        
+        <batch_processing>
+            <max_memory_usage>20000000000</max_memory_usage>
+            <max_execution_time>3600</max_execution_time>
+            <max_partitions_per_insert_block>1000</max_partitions_per_insert_block>
+        </batch_processing>
+    </profiles>
+
+    <users>
+        <default>
+            <password></password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+            <access_management>1</access_management>
+        </default>
+        
+        <airflow>
+            <password>airflow_password</password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>batch_processing</profile>
+            <quota>default</quota>
+        </airflow>
+        
+        <readonly>
+            <password>readonly_password</password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>readonly</profile>
+            <quota>default</quota>
+        </readonly>
+    </users>
+
+    <quotas>
+        <default>
+            <interval>
+                <duration>3600</duration>
+                <queries>0</queries>
+                <errors>0</errors>
+                <result_rows>0</result_rows>
+                <read_rows>0</read_rows>
+                <execution_time>0</execution_time>
+            </interval>
+        </default>
+    </quotas>
+</clickhouse>
