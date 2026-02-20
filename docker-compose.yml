@@ -207,17 +207,12 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: commerce
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile", "/mongodb/keyfile"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     volumes:
       - mongodb_data:/data/db
       - ./mongodb/init:/docker-entrypoint-initdb.d:ro
-      - ./mongodb/keyfile:/mongodb/keyfile:ro
     healthcheck:
-      test: ["CMD", "mongosh", "-u", "admin", "-p", "admin", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -241,7 +236,7 @@ services:
     entrypoint: >
       bash -c '
         sleep 10 &&
-        mongosh --host mongodb:27017 -u admin -p admin --authenticationDatabase admin --eval "
+        mongosh --host mongodb:27017 --eval "
           try {
             rs.status();
             print(\"Replica set already initialized\");
@@ -254,7 +249,7 @@ services:
           }
         " &&
         sleep 5 &&
-        mongosh --host mongodb:27017 -u admin -p admin --authenticationDatabase admin --eval "
+        mongosh --host mongodb:27017 --eval "
           use commerce;
           db.createCollection(\"events\");
           db.events.insertMany([

@@ -31,7 +31,7 @@ echo "  Event Type: $EVENT_TYPE"
 echo "  Metadata: {$META_KEY: $META_VALUE}"
 echo ""
 
-docker exec mongodb mongosh -u admin -p admin --authenticationDatabase admin --quiet --eval "
+docker exec mongodb mongosh --quiet --eval "
 db = db.getSiblingDB('commerce');
 db.events.insertOne({
     event_id: '$EVENT_ID',

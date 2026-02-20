@@ -26,7 +26,7 @@ RETURNING user_id, email, full_name;
 echo ""
 echo "--- Adding Events to MongoDB ---"
 
-docker exec mongodb mongosh -u admin -p admin --authenticationDatabase admin --quiet --eval "
+docker exec mongodb mongosh --quiet --eval "
 db = db.getSiblingDB('commerce');
 
 var events = [
