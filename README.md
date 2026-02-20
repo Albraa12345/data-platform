@@ -2,6 +2,172 @@
 
 A production-grade, fault-tolerant, scalable data platform implementing real-time Change Data Capture (CDC) with batch analytics capabilities.
 
+---
+
+## Quick Start Guide
+
+### Prerequisites
+
+- **Docker Desktop** with WSL 2 backend enabled
+- **WSL 2** (Ubuntu recommended)
+- At least **8GB RAM** allocated to Docker
+
+### 1. WSL Setup (Windows)
+
+```bash
+# Install WSL if not already installed
+wsl --install -d Ubuntu
+
+# Open WSL terminal
+wsl
+
+# Navigate to project directory
+cd /mnt/c/Users/<your-username>/barakah-code-challenge
+```
+
+### 2. Start the Platform
+
+```bash
+# Fix MongoDB keyfile permissions (required for auth)
+chmod 400 mongodb/keyfile
+
+# Make startup script executable
+chmod +x startup.sh
+
+# Start all services
+./startup.sh
+```
+
+Or start manually:
+```bash
+docker-compose up -d
+```
+
+### 3. Verify Services Are Running
+
+```bash
+docker-compose ps
+```
+
+All services should show `Up (healthy)`.
+
+### 4. Add Test Data
+
+**Add a new user (PostgreSQL):**
+```bash
+chmod +x scripts/add_user.sh
+./scripts/add_user.sh
+# Follow prompts to enter email and name
+```
+
+**Add a new event (MongoDB):**
+```bash
+chmod +x scripts/add_event.sh
+./scripts/add_event.sh
+# Follow prompts to enter user_id, event_type, and metadata
+```
+
+**Add sample data (both):**
+```bash
+chmod +x scripts/add_sample_data.sh
+./scripts/add_sample_data.sh
+```
+
+### 5. Access Services
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Airflow UI** | http://localhost:8080 | admin / admin |
+| **Kafka UI** | http://localhost:8081 | - |
+| **ClickHouse HTTP** | http://localhost:8123 | - |
+
+> **Note (WSL):** If `localhost` doesn't work, get WSL IP: `hostname -I | awk '{print $1}'`
+
+---
+
+## Working with ClickHouse
+
+### Connect to ClickHouse
+
+```bash
+# Via Docker
+docker exec -it clickhouse clickhouse-client
+
+# Or via HTTP API
+curl 'http://localhost:8123/'
+```
+
+### View Available Tables
+
+```sql
+-- List all tables in analytics database
+SHOW TABLES FROM analytics;
+
+-- Describe table structure
+DESCRIBE TABLE analytics.bronze_users;
+DESCRIBE TABLE analytics.bronze_events;
+DESCRIBE TABLE analytics.silver_users;
+DESCRIBE TABLE analytics.silver_events;
+DESCRIBE TABLE analytics.gold_user_activity;
+```
+
+### Query Data (Examples)
+
+**Bronze Layer (Raw CDC Data):**
+```sql
+-- View recent users from CDC
+SELECT * FROM analytics.bronze_users ORDER BY _ingested_at DESC LIMIT 10;
+
+-- View recent events from CDC
+SELECT * FROM analytics.bronze_events ORDER BY _ingested_at DESC LIMIT 10;
+
+-- Count records
+SELECT count() FROM analytics.bronze_users;
+SELECT count() FROM analytics.bronze_events;
+```
+
+**Silver Layer (Cleaned Data):**
+```sql
+-- Current state of users (deduplicated)
+SELECT * FROM analytics.v_silver_users_current LIMIT 10;
+
+-- Events with parsed timestamps
+SELECT user_id, event_type, event_timestamp 
+FROM analytics.silver_events 
+ORDER BY event_timestamp DESC LIMIT 10;
+```
+
+**Gold Layer (Aggregated Analytics):**
+```sql
+-- Daily user activity summary
+SELECT * FROM analytics.gold_user_activity 
+ORDER BY activity_date DESC LIMIT 10;
+
+-- User activity metrics
+SELECT 
+    user_id,
+    activity_date,
+    total_events,
+    distinct_event_types
+FROM analytics.gold_user_activity
+WHERE activity_date = today();
+```
+
+### HTTP API Queries
+
+```bash
+# Count users
+curl 'http://localhost:8123/' --data 'SELECT count() FROM analytics.bronze_users'
+
+# Get recent events (formatted)
+curl 'http://localhost:8123/' --data 'SELECT * FROM analytics.bronze_events ORDER BY _ingested_at DESC LIMIT 5 FORMAT Pretty'
+
+# Export as JSON
+curl 'http://localhost:8123/' --data 'SELECT * FROM analytics.silver_users FINAL LIMIT 10 FORMAT JSON'
+```
+
+---
+
 ## Architecture Overview
 
 ```
