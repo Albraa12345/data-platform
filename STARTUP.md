@@ -13,7 +13,7 @@
 Open WSL terminal and run:
 
 ```bash
-cd /mnt/c/Users/albra/barakah-code-challenge
+cd /data-platform
 chmod +x startup.sh
 ./startup.sh
 ```
@@ -25,7 +25,7 @@ chmod +x startup.sh
 ### Step 1: Navigate to Project
 
 ```bash
-cd /mnt/c/Users/albra/barakah-code-challenge
+cd /data-platform
 ```
 
 ### Step 2: Start Core Infrastructure
