@@ -107,7 +107,7 @@ echo "=========================================="
 echo -e "${GREEN}Airflow UI:${NC}      http://${WSL_IP}:8080  (admin/admin)"
 echo -e "${GREEN}Kafka UI:${NC}        http://${WSL_IP}:8081"
 echo -e "${GREEN}ClickHouse:${NC}      http://${WSL_IP}:8123"
-echo -e "${GREEN}ClickHouse Studio:${NC} http://${WSL_IP}:8123/"
+echo -e "${GREEN}ClickHouse Play:${NC} http://${WSL_IP}:8123/play"
 echo -e "${GREEN}Kafka Connect:${NC}   http://${WSL_IP}:8083"
 echo ""
 
