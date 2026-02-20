@@ -14,18 +14,29 @@ A production-grade, fault-tolerant, scalable data platform implementing real-tim
 
 ### 1. WSL Setup (Windows)
 
-```bash
-# Install WSL if not already installed
+```powershell
+# Install WSL if not already installed (run in PowerShell as Admin)
 wsl --install -d Ubuntu
 
 # Open WSL terminal
 wsl
-
-# Navigate to project directory
-cd /mnt/c/Users/<your-username>/barakah-code-challenge
 ```
 
-### 2. Start the Platform
+### 2. Clone the Repository (Inside WSL)
+
+```bash
+# Navigate to your home directory
+cd ~
+
+# Clone the project
+git clone https://github.com/Albraa12345/data-platform.git
+cd data-platform
+
+# Or if already cloned, pull latest changes
+git pull origin main
+```
+
+### 3. Start the Platform
 
 ```bash
 # Fix MongoDB keyfile permissions (required for auth)
@@ -34,16 +45,13 @@ chmod 400 mongodb/keyfile
 # Make startup script executable
 chmod +x startup.sh
 
-# Start all services
+# Start all services (handles dependencies correctly)
 ./startup.sh
 ```
 
-Or start manually:
-```bash
-docker-compose up -d
-```
+> **Important:** Always use `startup.sh` instead of `docker-compose up -d` to avoid race conditions with service dependencies.
 
-### 3. Verify Services Are Running
+### 4. Verify Services Are Running
 
 ```bash
 docker-compose ps
@@ -51,7 +59,7 @@ docker-compose ps
 
 All services should show `Up (healthy)`.
 
-### 4. Add Test Data
+### 5. Add Test Data
 
 **Add a new user (PostgreSQL):**
 ```bash
@@ -73,7 +81,7 @@ chmod +x scripts/add_sample_data.sh
 ./scripts/add_sample_data.sh
 ```
 
-### 5. Access Services
+### 6. Access Services
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
